@@ -33,6 +33,7 @@ class GPTResearcher:
         report_source: str = ReportSource.Web.value,
         tone: Tone = Tone.Objective,
         source_urls=None,
+        document_urls=None,
         complement_source_urls=False,
         documents=None,
         vector_store=None,
@@ -54,12 +55,12 @@ class GPTResearcher:
         self.report_type = report_type
         self.cfg = Config(config_path)
         self.llm = GenericLLMProvider(self.cfg)
-        self.report_source = getattr(
-            self.cfg, 'report_source', None) or report_source
+        self.report_source = report_source if report_source else getattr(self.cfg, 'report_source', None)
         self.report_format = report_format
         self.max_subtopics = max_subtopics
         self.tone = tone if isinstance(tone, Tone) else Tone.Objective
         self.source_urls = source_urls
+        self.document_urls = document_urls
         self.complement_source_urls: bool = complement_source_urls
         self.research_sources = []  # The list of scraped sources including title, content and images
         self.research_images = []  # The list of selected research images

@@ -42,7 +42,10 @@ async def write_report_introduction(
             messages=[
                 {"role": "system", "content": f"{agent_role_prompt}"},
                 {"role": "user", "content": generate_report_introduction(
-                    query, context)},
+                    question=query,
+                    research_summary=context,
+                    language=config.language
+                )},
             ],
             temperature=0.25,
             llm_provider=config.smart_llm_provider,
@@ -85,7 +88,9 @@ async def write_conclusion(
             model=config.smart_llm_model,
             messages=[
                 {"role": "system", "content": f"{agent_role_prompt}"},
-                {"role": "user", "content": generate_report_conclusion(query, context)},
+                {"role": "user", "content": generate_report_conclusion(query=query,
+                                                                       report_content=context,
+                                                                       language=config.language)},
             ],
             temperature=0.25,
             llm_provider=config.smart_llm_provider,
@@ -245,7 +250,22 @@ async def generate_report(
             llm_kwargs=cfg.llm_kwargs,
             cost_callback=cost_callback,
         )
-    except Exception as e:
-        print(f"Error in generate_report: {e}")
+    except:
+        try:
+            report = await create_chat_completion(
+                model=cfg.smart_llm_model,
+                messages=[
+                    {"role": "user", "content": f"{agent_role_prompt}\n\n{content}"},
+                ],
+                temperature=0.35,
+                llm_provider=cfg.smart_llm_provider,
+                stream=True,
+                websocket=websocket,
+                max_tokens=cfg.smart_token_limit,
+                llm_kwargs=cfg.llm_kwargs,
+                cost_callback=cost_callback,
+            )
+        except Exception as e:
+            print(f"Error in generate_report: {e}")
 
     return report

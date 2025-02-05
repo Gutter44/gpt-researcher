@@ -19,6 +19,8 @@ _SUPPORTED_PROVIDERS = {
     "bedrock",
     "dashscope",
     "xai",
+    "deepseek",
+    "litellm",
 }
 
 
@@ -114,6 +116,25 @@ class GenericLLMProvider:
             from langchain_xai import ChatXAI
 
             llm = ChatXAI(**kwargs)
+        elif provider == "deepseek":
+            _check_pkg("langchain_openai")
+            from langchain_openai import ChatOpenAI
+
+            llm = ChatOpenAI(openai_api_base='https://api.deepseek.com',
+                     openai_api_key=os.environ["DEEPSEEK_API_KEY"],
+                     **kwargs
+                )
+        elif provider == "litellm":
+            _check_pkg("langchain_community")
+            from langchain_community.chat_models.litellm import ChatLiteLLM
+
+            llm = ChatLiteLLM(**kwargs)
+        elif provider == "gigachat":
+            _check_pkg("langchain_gigachat")
+            from langchain_gigachat.chat_models import GigaChat
+
+            kwargs.pop("model", None) # Use env GIGACHAT_MODEL=GigaChat-Max
+            llm = GigaChat(**kwargs)
         else:
             supported = ", ".join(_SUPPORTED_PROVIDERS)
             raise ValueError(

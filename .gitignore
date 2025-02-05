@@ -45,3 +45,9 @@ package-lock.json
 # Log files
 logs/
 *.orig
+*.log
+server_log.txt
+
+#Cursor Rules
+.cursorrules
+CURSOR_RULES.md

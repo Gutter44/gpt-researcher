@@ -3,9 +3,9 @@
 As described in the [introduction](/docs/gpt-researcher/gptr/config), the default LLM and embedding is OpenAI due to its superior performance and speed. 
 With that said, GPT Researcher supports various open/closed source LLMs and embeddings, and you can easily switch between them by updating the `SMART_LLM`, `FAST_LLM` and `EMBEDDING` env variables. You might also need to include the provider API key and corresponding configuration params.
 
-Current supported LLMs are `openai`, `anthropic`, `azure_openai`, `cohere`, `google_vertexai`, `google_genai`, `fireworks`, `ollama`, `together`, `mistralai`, `huggingface`, `groq` and `bedrock`.
+Current supported LLMs are `openai`, `anthropic`, `azure_openai`, `cohere`, `google_vertexai`, `google_genai`, `fireworks`, `ollama`, `together`, `mistralai`, `huggingface`, `groq`, `bedrock` and `litellm`.
 
-Current supported embeddings are `openai`, `azure_openai`, `cohere`, `google_vertexai`, `google_genai`, `fireworks`, `ollama`, `together`, `mistralai`, `huggingface`, `nomic` and `voyageai`.
+Current supported embeddings are `openai`, `azure_openai`, `cohere`, `google_vertexai`, `google_genai`, `fireworks`, `ollama`, `together`, `mistralai`, `huggingface`, `nomic` ,`voyageai` and `bedrock`.
 
 To learn more about support customization options see [here](/gpt-researcher/config).
 
@@ -61,24 +61,39 @@ EMBEDDING="custom:your_embedding"
 
 ## Azure OpenAI
 
-See also the documentation in the Langchain [Azure OpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.azure.AzureChatOpenAI.html) page.
+In Azure OpenAI you have to chose which models you want to use and make deployments for each model. You do this on the [Azure OpenAI Portal](https://portal.azure.com/). 
 
-On Azure OpenAI you will need to create deployments for each model you want to use. Please also specify the model names/deployment names in your `.env` file:
+In January 2025 the models that are recommended to use are: 
 
-Required Embedding Model:
-To ensure optimal performance, GPT Researcher requires the text-embedding-3-large model. Please deploy this specific model to your Azure Endpoint.
+- gpt-4o-mini
+- gpt-4o
+- o1-preview or o1-mini (You might need to request access to these models before you can deploy them).
+
+Please then specify the model names/deployment names in your `.env` file.
+
+**Required Precondition** 
+
+- Ypur endpoint can have any valid name.
+- A model's deployment name *must be the same* as the model name.
+- You need to deploy an *Embedding Model*: To ensure optimal performance, GPT Researcher requires the 'text-embedding-3-large' model. Please deploy this specific model to your Azure Endpoint.
+
+**Recommended**:
+
+- Quota increase: You should also request a quota increase especially for the embedding model, as the default quota is not sufficient. 
 
 ```bash
-AZURE_OPENAI_API_KEY=[Your Key]
-AZURE_OPENAI_ENDPOINT=https://{your-endpoint}.openai.azure.com/
-OPENAI_API_VERSION=2024-05-01-preview
+# set the azure api key and deployment as you have configured it in Azure Portal. There is no default access point unless you configure it yourself!
+AZURE_OPENAI_API_KEY="[Your Key]"
+AZURE_OPENAI_ENDPOINT="https://{your-endpoint}.openai.azure.com/"
+OPENAI_API_VERSION="2024-05-01-preview"
 
-# note that the deployment name must be the same as the model name
-FAST_LLM=azure_openai:gpt-4o-mini 
-SMART_LLM=azure_openai:gpt-4o
-STRATEGIC_LLM=azure_openai:o1-preview
+# each string is "azure_openai:deployment_name". ensure that your deployment have the same name as the model you use!
+FAST_LLM="azure_openai:gpt-4o-mini" 
+SMART_LLM="azure_openai:gpt-4o"
+STRATEGIC_LLM="azure_openai:o1-preview"
 
-
+# specify embedding
+EMBEDDING="azure_openai:text-embedding-3-large"
 ```
 
 
@@ -237,6 +252,17 @@ EMBEDDING="fireworks:nomic-ai/nomic-embed-text-v1.5"
 FAST_LLM="bedrock:anthropic.claude-3-sonnet-20240229-v1:0"
 SMART_LLM="bedrock:anthropic.claude-3-sonnet-20240229-v1:0"
 STRATEGIC_LLM="bedrock:anthropic.claude-3-sonnet-20240229-v1:0"
+
+EMBEDDING="bedrock:amazon.titan-embed-text-v2:0"
+```
+
+
+## LiteLLM
+
+```bash
+FAST_LLM="litellm:perplexity/pplx-7b-chat"
+SMART_LLM="litellm:perplexity/pplx-70b-chat"
+STRATEGIC_LLM="litellm:perplexity/pplx-70b-chat"
 ```
 
 
@@ -246,6 +272,15 @@ STRATEGIC_LLM="bedrock:anthropic.claude-3-sonnet-20240229-v1:0"
 FAST_LLM="xai:grok-beta"
 SMART_LLM="xai:grok-beta"
 STRATEGIC_LLM="xai:grok-beta"
+```
+
+
+## DeepSeek
+```bash
+DEEPSEEK_API_KEY=[Your key]
+FAST_LLM="deepseek:deepseek-chat"
+SMART_LLM="deepseek:deepseek-chat"
+STRATEGIC_LLM="deepseek:deepseek-chat"
 ```
 
 

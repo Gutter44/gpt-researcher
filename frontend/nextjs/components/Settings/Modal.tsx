@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
 import ChatBox from './ChatBox';
-import axios from 'axios';
-import { getHost } from '../../helpers/getHost';
 
 interface ChatBoxSettings {
   report_source: string;
@@ -39,15 +37,6 @@ export default function Modal({ setChatBoxSettings, chatBoxSettings }: ChatBoxPr
     const storedConfig = localStorage.getItem('apiVariables');
     if (storedConfig) {
       setApiVariables(JSON.parse(storedConfig));
-    } else {
-      axios.get(`${getHost()}/getConfig`)
-        .then(response => {
-          setApiVariables(response.data);
-          localStorage.setItem('apiVariables', JSON.stringify(response.data));
-        })
-        .catch(error => {
-          console.error('Error fetching config:', error);
-        });
     }
   }, [showModal]);
 
